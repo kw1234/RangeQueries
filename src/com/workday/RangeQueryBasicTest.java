@@ -19,6 +19,19 @@ public class RangeQueryBasicTest {
         emptyRc = rf.createContainer(new long[]{});
     }
 
+    /*
+        How will I split up the data using the current classes / constraints each carries with them?
+        I may need to ask Mike / Savi about if I can change some stuff. But I need to try before asking.
+
+        - I take in this long data
+        - I have N workers.
+        - If I try doing some split based off paritioning from the get go, then I will run into an imbalance issue
+        - If I change buckets each index, then the ordering will be lost. I need to sort the answers after.
+
+        What I need to ask them is the context of the problem as well. Maybe this RangeContainerFactory already contains
+        data that has been partitioned, and my job is to just make the classes thread safe or have them run threads?
+     */
+
     @Test
     public void runARangeQuery(){
         Ids ids = rc.findIdsInRange(14, 17, true, true);
