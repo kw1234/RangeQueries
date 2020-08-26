@@ -5,6 +5,9 @@ import java.util.LinkedList;
 
 import java.io.*;
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 public class RangeContainerImpl implements RangeContainer {
 
@@ -21,31 +24,36 @@ public class RangeContainerImpl implements RangeContainer {
     public Ids findIdsInRange(long fromValue, long toValue, boolean fromInclusive, boolean toInclusive) {
 
         Queue<Integer> que = new LinkedList<>();
-        List<List<Integer>> indices = new ArrayList();
         List<Integer> lst = Collections.synchronizedList(new ArrayList());
 
-        for (int i = 0; i < partitions.size(); i++) {
+        ExecutorService es = Executors.newCachedThreadPool();
+        boolean finished = false;
+        for(int i=0;i<partitions.size();i++) {
             List<long[]> partition = partitions.get(i);
-            Runnable r1 = new Runnable() {
+            es.execute(new Runnable() {
                 public void run() {
-                    //List<Integer> lst = new ArrayList();
                     addElemToQueue(partition, fromValue, toValue, fromInclusive, toInclusive, lst);
-                    /*for (int n: lst) {
-                        que.add(n);
-                    }
-                    indices.add(lst);*/
                 }
-            };
-            Thread t1 = new Thread(r1, "Thread t"+i);
-            t1.start();
+
+            });
         }
 
-        Collections.sort(lst);
-        for (int n: lst) {
-            que.add(n);
+        es.shutdown();
+        try {
+            finished = es.awaitTermination(1, TimeUnit.MINUTES);
+        } catch (Exception e) {
+            System.out.println(e);
         }
 
-        Ids result = new IdsImpl(que, indices);
+        if (finished) {
+            Collections.sort(lst);
+            for (int n: lst) {
+                que.add(n);
+            }
+        }
+
+
+        Ids result = new IdsImpl(que);
         return result;
     }
 

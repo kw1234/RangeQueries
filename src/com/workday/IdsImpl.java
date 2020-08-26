@@ -7,18 +7,9 @@ import java.util.Queue;
 public class IdsImpl implements Ids {
 
     Queue<Integer> idList;
-    List<List<Integer>> indices;
 
-    public IdsImpl(Queue<Integer> que, List<List<Integer>> indices) {
+    public IdsImpl(Queue<Integer> que) {
         idList = que;
-        this.indices = indices;
-        for (List<Integer> indexLst: indices) {
-            for (int i: indexLst){
-                System.out.print(i+" ");
-            }
-            System.out.println();
-        }
-        System.out.println();
     }
 
     public short nextId() {

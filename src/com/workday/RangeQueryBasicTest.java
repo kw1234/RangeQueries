@@ -55,10 +55,15 @@ public class RangeQueryBasicTest {
         assertEquals(2, ids.nextId());
         assertEquals(5, ids.nextId());
         assertEquals(21, ids.nextId());
+        assertEquals(Ids.END_OF_IDS, ids.nextId());
         ids = negativeRc.findIdsInRange(-10, 10, true, false);
+        assertEquals(4, ids.nextId());
         assertEquals(7, ids.nextId());
         assertEquals(8, ids.nextId());
+        assertEquals(9, ids.nextId());
         assertEquals(11, ids.nextId());
+        assertEquals(12, ids.nextId());
+        assertEquals(Ids.END_OF_IDS, ids.nextId());
         ids = negativeRc.findIdsInRange(-22, 0, true, false);
         assertEquals(1, ids.nextId());
         assertEquals(3, ids.nextId());
