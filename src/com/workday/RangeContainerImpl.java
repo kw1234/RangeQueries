@@ -21,27 +21,31 @@ public class RangeContainerImpl implements RangeContainer {
     public Ids findIdsInRange(long fromValue, long toValue, boolean fromInclusive, boolean toInclusive) {
 
         Queue<Integer> que = new LinkedList<>();
-        List<Integer> lst = new ArrayList<>();
+        List<List<Integer>> indices = new ArrayList();
+        List<Integer> lst = Collections.synchronizedList(new ArrayList());
 
         for (int i = 0; i < partitions.size(); i++) {
             List<long[]> partition = partitions.get(i);
             Runnable r1 = new Runnable() {
                 public void run() {
+                    //List<Integer> lst = new ArrayList();
                     addElemToQueue(partition, fromValue, toValue, fromInclusive, toInclusive, lst);
+                    /*for (int n: lst) {
+                        que.add(n);
+                    }
+                    indices.add(lst);*/
                 }
             };
-            //Task t = new Task(partition);
             Thread t1 = new Thread(r1, "Thread t"+i);
             t1.start();
         }
 
         Collections.sort(lst);
-        for (int i = 0; i < lst.size(); i++) {
-            System.out.println(lst.get(i));
-            que.add(lst.get(i));
+        for (int n: lst) {
+            que.add(n);
         }
 
-        Ids result = new IdsImpl(que);
+        Ids result = new IdsImpl(que, indices);
         return result;
     }
 
@@ -69,34 +73,12 @@ public class RangeContainerImpl implements RangeContainer {
             long[] pair = partition.get(i);
             long val = pair[0];
             long index = pair[1];
-            //System.out.print(val+" ");
             if (val >= lowerBound && val <= upperBound) {
                 if (!fromInclusive && val == lowerBound) return;
                 if (!toInclusive && val == upperBound) return;
                 lst.add((int) index);
             }
         }
-    }
-
-    class Task extends Thread{
-
-        List<Long> partition;
-        private Thread t;
-
-        public Task(List<Long> partition) {
-            this.partition = partition;
-        }
-
-        public void run() {
-            // output the value, either string or num depending on how it was initialized
-            try {
-                System.out.println(this.partition);
-            } catch (Exception e) {
-                System.out.println("interrupted");
-            }
-            System.out.println("done executing");
-        }
-
     }
 }
 

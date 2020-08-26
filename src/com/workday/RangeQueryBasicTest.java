@@ -19,19 +19,6 @@ public class RangeQueryBasicTest {
         emptyRc = rf.createContainer(new long[]{});
     }
 
-    /*
-        How will I split up the data using the current classes / constraints each carries with them?
-        I may need to ask Mike / Savi about if I can change some stuff. But I need to try before asking.
-
-        - I take in this long data
-        - I have N workers.
-        - If I try doing some split based off paritioning from the get go, then I will run into an imbalance issue
-        - If I change buckets each index, then the ordering will be lost. I need to sort the answers after.
-
-        What I need to ask them is the context of the problem as well. Maybe this RangeContainerFactory already contains
-        data that has been partitioned, and my job is to just make the classes thread safe or have them run threads?
-     */
-
     @Test
     public void runARangeQuery(){
         Ids ids = rc.findIdsInRange(14, 17, true, true);
@@ -48,18 +35,39 @@ public class RangeQueryBasicTest {
         assertEquals(Ids.END_OF_IDS, ids.nextId());
     }
 
-    /*@Test
+    @Test
     public void bigRangeQuery(){
         Ids ids = bigRc.findIdsInRange(14, 17, true, true);
+        assertEquals(2, ids.nextId());
+        assertEquals(5, ids.nextId());
+        assertEquals(6, ids.nextId());
+        assertEquals(22, ids.nextId());
+        assertEquals(Ids.END_OF_IDS, ids.nextId());
+        ids = bigRc.findIdsInRange(0, 30, true, true);
+        assertEquals(0, ids.nextId());
+        assertEquals(1, ids.nextId());
+        assertEquals(2, ids.nextId());
     }
 
     @Test
     public void negativeRangeQuery(){
         Ids ids = negativeRc.findIdsInRange(14, 17, true, true);
+        assertEquals(2, ids.nextId());
+        assertEquals(5, ids.nextId());
+        assertEquals(21, ids.nextId());
+        ids = negativeRc.findIdsInRange(-10, 10, true, false);
+        assertEquals(7, ids.nextId());
+        assertEquals(8, ids.nextId());
+        assertEquals(11, ids.nextId());
+        ids = negativeRc.findIdsInRange(-22, 0, true, false);
+        assertEquals(1, ids.nextId());
+        assertEquals(3, ids.nextId());
+        assertEquals(6, ids.nextId());
     }
 
     @Test
     public void emptyRangeQuery(){
         Ids ids = emptyRc.findIdsInRange(14, 17, true, true);
-    }*/
+        assertEquals(Ids.END_OF_IDS, ids.nextId(), ids.nextId());
+    }
 }
